@@ -117,3 +117,18 @@ CREATE TABLE song_stream_counts (
 
     FOREIGN KEY (song_id) REFERENCES songs(song_id) ON DELETE CASCADE
 );
+
+CREATE TABLE concerts (
+    concert_id      SERIAL PRIMARY KEY,
+    artist_id       INTEGER NOT NULL,
+    title           VARCHAR,
+    country         VARCHAR,
+    city		    VARCHAR,
+    venue           VARCHAR,
+    date            DATE,
+    time            TIME,
+    ticket_url      TEXT,
+    is_cancelled    BOOLEAN DEFAULT FALSE,
+
+    FOREIGN KEY (artist_id) REFERENCES artists(artist_id)
+);
