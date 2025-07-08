@@ -27,7 +27,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Login (normal OR through login provider)
+-- Login (normal)
 CREATE OR REPLACE FUNCTION login_user(p_email TEXT, p_password TEXT)
 RETURNS INTEGER AS $$
 DECLARE
@@ -46,8 +46,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Login via provider
 CREATE OR REPLACE FUNCTION login_oauth_user(
-    p_provider VARCHAR,
+    p_provider VARCHAR,             -- e.g. 'google', 'facebook', 'phone'
+    p_provider_user_id VARCHAR,     -- the unique ID from the provider
     p_email VARCHAR,
     p_username VARCHAR DEFAULT NULL
 )
@@ -55,22 +57,25 @@ RETURNS INTEGER AS $$
 DECLARE
     uid INTEGER;
 BEGIN
-    -- Try to find existing user
+    -- Look up existing user by provider + external ID
     SELECT user_id INTO uid
     FROM users
-    WHERE login_provider = p_provider;
+    WHERE login_provider = p_provider
+      AND provider_user_id = p_provider_user_id;
 
-    -- If not found, create a new user
+    -- If not found, insert new user
     IF uid IS NULL THEN
         INSERT INTO users (
             username,
             email,
-            login_provider
+            login_provider,
+            provider_user_id
         )
         VALUES (
-            COALESCE(p_username, p_email), -- fallback to email as username
+            COALESCE(p_username, p_email),
             p_email,
-            p_provider
+            p_provider,
+            p_provider_user_id
         )
         RETURNING user_id INTO uid;
     END IF;
@@ -78,6 +83,7 @@ BEGIN
     RETURN uid;
 END;
 $$ LANGUAGE plpgsql;
+
 
 -- Update user
 CREATE OR REPLACE FUNCTION update_user_profile(

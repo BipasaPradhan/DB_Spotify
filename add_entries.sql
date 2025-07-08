@@ -49,3 +49,11 @@ select login_oauth_user(
        'joey@example.com', -- email
        'Joey' -- username
        );
+
+-- Adding via phone number
+select login_oauth_user(
+       'phone',
+       '0991234567',
+       NULL,
+       'Nanu' -- Optional (maybe not needed on initial login/change username later)
+       )
