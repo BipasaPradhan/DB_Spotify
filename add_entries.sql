@@ -132,25 +132,25 @@ INSERT INTO playlists (playlist_id, title, user_id, is_public, created_at) VALUE
     (3, 'K-Pop Collection', 8, FALSE, CURRENT_TIMESTAMP);
 
 -- Playlist 1: Chill Pop
-SELECT add_song_to_playlist(1, 34, 1);
-SELECT add_song_to_playlist(1, 35, 2);
-SELECT add_song_to_playlist(1, 36, 3);
-SELECT add_song_to_playlist(1, 37, 4);
-SELECT add_song_to_playlist(1, 38, 5);
+SELECT add_song_to_playlist(3, 34, 1);
+SELECT add_song_to_playlist(3, 35, 2);
+SELECT add_song_to_playlist(3, 36, 3);
+SELECT add_song_to_playlist(3, 37, 4);
+SELECT add_song_to_playlist(3, 38, 5);
 
 -- Playlist 2: Hype Hip-Hop
-SELECT add_song_to_playlist(2, 39, 1);
-SELECT add_song_to_playlist(2, 40, 2);
-SELECT add_song_to_playlist(2, 41, 3);
-SELECT add_song_to_playlist(2, 42, 4);
-SELECT add_song_to_playlist(2, 43, 5);
+SELECT add_song_to_playlist(4, 39, 1);
+SELECT add_song_to_playlist(4, 40, 2);
+SELECT add_song_to_playlist(4, 41, 3);
+SELECT add_song_to_playlist(4, 42, 4);
+SELECT add_song_to_playlist(4, 43, 5);
 
 -- Playlist 3: K-Pop Collection
-SELECT add_song_to_playlist(3, 44, 1);
-SELECT add_song_to_playlist(3, 45, 2);
-SELECT add_song_to_playlist(3, 46, 3);
-SELECT add_song_to_playlist(3, 47, 4);
-SELECT add_song_to_playlist(3, 48, 5);
+SELECT add_song_to_playlist(5, 44, 1);
+SELECT add_song_to_playlist(5, 45, 2);
+SELECT add_song_to_playlist(5, 46, 3);
+SELECT add_song_to_playlist(5, 47, 4);
+SELECT add_song_to_playlist(5, 48, 5);
 
 
 -- Add media like
