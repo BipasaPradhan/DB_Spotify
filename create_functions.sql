@@ -110,3 +110,55 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Playlist
+CREATE OR REPLACE FUNCTION get_songs_from_playlist(
+    p_playlist_id INT
+)
+RETURNS TABLE (
+    song_id INT,
+    title VARCHAR,
+    artist_name VARCHAR,
+    duration INTERVAL,
+    genre_id INT,
+    file_url TEXT,
+    explicit BOOLEAN,
+    "position" INT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        s.song_id,
+        s.title,
+        a.name AS artist_name,
+        s.duration,
+        s.genre_id,
+        s.file_url,
+        s.explicit,
+        ps."position"
+    FROM playlist_songs ps
+    JOIN songs s ON ps.song_id = s.song_id
+    JOIN artists a ON s.artist_id = a.artist_id
+    WHERE ps.playlist_id = p_playlist_id
+    ORDER BY ps."position";
+END;
+$$ LANGUAGE plpgsql;
+
+-- Concert --
+-- Delete concert
+CREATE OR REPLACE FUNCTION cancel_concert(p_concert_id INT)
+    RETURNS VOID AS $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM concerts WHERE concert_id = p_concert_id AND is_cancelled = FALSE
+    ) THEN
+        UPDATE concerts
+        SET is_cancelled = TRUE
+        WHERE concert_id = p_concert_id;
+        RAISE NOTICE 'Concert % has been cancelled.', p_concert_id;
+    ELSE
+        RAISE NOTICE 'Concert % is already cancelled or does not exist.', p_concert_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+
