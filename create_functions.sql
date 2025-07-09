@@ -146,7 +146,7 @@ $$ LANGUAGE plpgsql;
 -- Concert --
 -- Delete concert
 CREATE OR REPLACE FUNCTION cancel_concert(p_concert_id INT)
-    RETURNS VOID AS $$
+RETURNS VOID AS $$
 BEGIN
     IF EXISTS (
         SELECT 1 FROM concerts WHERE concert_id = p_concert_id AND is_cancelled = FALSE
@@ -154,11 +154,39 @@ BEGIN
         UPDATE concerts
         SET is_cancelled = TRUE
         WHERE concert_id = p_concert_id;
-        RAISE NOTICE 'Concert % has been cancelled.', p_concert_id;
-    ELSE
-        RAISE NOTICE 'Concert % is already cancelled or does not exist.', p_concert_id;
     END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+-- update concert 
+CREATE OR REPLACE FUNCTION update_concert(
+    p_concert_id INT,
+    p_title VARCHAR DEFAULT NULL,
+    p_country VARCHAR DEFAULT NULL,
+    p_city VARCHAR DEFAULT NULL,
+    p_venue VARCHAR DEFAULT NULL,
+    p_date DATE DEFAULT NULL,
+    p_time TIME DEFAULT NULL,
+    p_ticket_url TEXT DEFAULT NULL
+)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE concerts
+    SET
+        title = COALESCE(p_title, title),
+        country = COALESCE(p_country, country),
+        city = COALESCE(p_city, city),
+        venue = COALESCE(p_venue, venue),
+        date = COALESCE(p_date, date),
+        time = COALESCE(p_time, time),
+        ticket_url = COALESCE(p_ticket_url, ticket_url)
+    WHERE concert_id = p_concert_id;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+
 
 
