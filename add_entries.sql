@@ -120,14 +120,7 @@ INSERT INTO song_stream_counts (song_id, stream_count) VALUES
 INSERT INTO playlists (playlist_id, title, user_id, is_public, created_at) VALUES
     (1, 'Chill Pop', 5, TRUE, CURRENT_TIMESTAMP),
     (2, 'Hype Hip-Hop', 6, TRUE, CURRENT_TIMESTAMP),
-    (3, 'K-Pop Collection', 8, FALSE, CURRENT_TIMESTAMP),
-    (4, 'Late Night R&B', 14, TRUE, CURRENT_TIMESTAMP),
-    (5, 'Latin Vibes', 9, TRUE, CURRENT_TIMESTAMP),
-    (6, 'Workout Boost', 6, FALSE, CURRENT_TIMESTAMP),
-    (7, 'Sad Bangers', 10, TRUE, CURRENT_TIMESTAMP),
-    (8, 'Throwback Hits', 5, TRUE, CURRENT_TIMESTAMP),
-    (9, 'Weekend Chill', 8, FALSE, CURRENT_TIMESTAMP),
-    (10, 'Global 100', 15, TRUE, CURRENT_TIMESTAMP);
+    (3, 'K-Pop Collection', 8, FALSE, CURRENT_TIMESTAMP);
 
 -- Playlist 1: Chill Pop
 INSERT INTO playlist_songs (playlist_id, song_id, position) VALUES
@@ -153,10 +146,22 @@ INSERT INTO playlist_songs (playlist_id, song_id, position) VALUES
     (3, 16, 4),
     (3, 18, 5);
 
+-- Add media like
 INSERT INTO adds (user_id, target_type, target_id) VALUES
     (5, 'playlist', 1),
     (8, 'playlist', 3),
     (6, 'album', 2);
+    (5, 'playlist', 1),
+    (8, 'playlist', 3),
+    (6, 'album', 2);
+select add_media_to_library(10, 7, 'album');
+select add_media_to_library(10, 12, 'song');
+select add_media_to_library(10, 13, 'song');
+select add_media_to_library(11, 4, 'album');
+select add_media_to_library(12, 15, 'song');
+select add_media_to_library(13, 2, 'playlist');
+select add_media_to_library(5, 3, 'song');
+
 
 -- Adding users by register
 select register_user(
