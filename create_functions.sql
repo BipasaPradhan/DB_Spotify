@@ -305,6 +305,87 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Add new song
+CREATE OR REPLACE FUNCTION add_new_song(
+    p_title VARCHAR,
+    p_artist_id INT,
+    p_duration INTERVAL,
+    p_genre_id INT,
+    p_file_url TEXT,
+    p_explicit BOOLEAN,
+    p_album_id INT DEFAULT NULL
+)
+RETURNS INT AS $$
+DECLARE
+    new_song_id INT;
+BEGIN
+    INSERT INTO songs (
+        title,
+        artist_id,
+        duration,
+        genre_id,
+        file_url,
+        explicit,
+        album_id
+    )
+    VALUES (
+        p_title,
+        p_artist_id,
+        p_duration,
+        p_genre_id,
+        p_file_url,
+        p_explicit,
+        p_album_id
+    )
+    RETURNING song_id INTO new_song_id;
+
+    RETURN new_song_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Add album
+CREATE OR REPLACE FUNCTION add_album(
+    p_title VARCHAR,
+    p_artist_id INT,
+    p_release_date DATE,
+    p_cover_url TEXT
+)
+RETURNS INT AS $$
+DECLARE
+    new_album_id INT;
+BEGIN
+    INSERT INTO albums (
+        title,
+        artist_id,
+        release_date,
+        cover_url
+    )
+    VALUES (
+        p_title,
+        p_artist_id,
+        p_release_date,
+        p_cover_url
+    )
+    RETURNING album_id INTO new_album_id;
+
+    RETURN new_album_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Add song to album
+CREATE OR REPLACE FUNCTION add_song_to_album(
+    p_album_id INT,
+    p_song_id INT
+)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE songs
+    SET album_id = p_album_id
+    WHERE song_id = p_song_id;
+END;
+$$ LANGUAGE plpgsql;
+
+
 
 
 

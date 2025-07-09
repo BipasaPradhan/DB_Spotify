@@ -54,46 +54,57 @@ INSERT INTO concerts (concert_id, artist_id, title, country, city, venue, date, 
     (9, 9, 'Lola Bunny', 'China', 'Shanghai', 'Shanghai Dome', '2025-11-11', '19:30', 'https://ccp.com/shanghai', FALSE),
     (10, 10, 'Olive Garden', 'Greece', 'Athens', 'Athena Colosseum', '2025-8-8', '18:30', 'https://tickets.com/athens', FALSE);
 
-INSERT INTO songs (song_id, title, artist_id, album_id, genre_id, duration, file_url, explicit) VALUES
-    -- Album 1
-    (1, 'Anti-Hero', 1, 1, 1, '00:03:20', 'https://cdn.com/antihero.mp3', FALSE),
-    (2, 'Lavender Haze', 1, 1, 1, '00:03:22', 'https://cdn.com/lavenderhaze.mp3', FALSE),
+SELECT add_new_song('Single Track', 5, '00:03:20', 2, 'url.mp3', false);
+DO $$
+BEGIN
+    -- Album 1 songs
+    PERFORM add_new_song('Anti-Hero', 1, '00:03:20', 1, 'https://cdn.com/antihero.mp3', FALSE, 1);
+    PERFORM add_new_song('Lavender Haze', 1, '00:03:22', 1, 'https://cdn.com/lavenderhaze.mp3', FALSE, 1);
+    -- Single without album
+    PERFORM add_new_song('Single Track 1', 5, '00:03:20', 2, 'https://cdn.com/singletrack1.mp3', FALSE, NULL);
 
-    -- Album 2
-    (3, 'Girls Want Girls', 2, 2, 2, '00:03:41', 'https://cdn.com/gwg.mp3', TRUE),
-    (4, 'Champagne Poetry', 2, 2, 2, '00:05:36', 'https://cdn.com/champagnepoetry.mp3', FALSE),
+    -- Album 2 songs
+    PERFORM add_new_song('Girls Want Girls', 2, '00:03:41', 2, 'https://cdn.com/gwg.mp3', TRUE, 2);
+    PERFORM add_new_song('Champagne Poetry', 2, '00:05:36', 2, 'https://cdn.com/champagnepoetry.mp3', FALSE, 2);
 
-    -- Album 3
-    (5, 'Black Swan', 3, 3, 3, '00:03:18', 'https://cdn.com/blackswan.mp3', FALSE),
-    (6, 'ON', 3, 3, 3, '00:04:06', 'https://cdn.com/on.mp3', FALSE),
+    -- Album 3 songs
+    PERFORM add_new_song('Black Swan', 3, '00:03:18', 3, 'https://cdn.com/blackswan.mp3', FALSE, 3);
+    PERFORM add_new_song('ON', 3, '00:04:06', 3, 'https://cdn.com/on.mp3', FALSE, 3);
 
-    -- Album 4
-    (7, 'Your Power', 4, 4, 1, '00:04:05', 'https://cdn.com/yourpower.mp3', FALSE),
-    (8, 'Happier Than Ever', 4, 4, 1, '00:04:58', 'https://cdn.com/happierthanever.mp3', FALSE),
+    -- Album 4 songs
+    PERFORM add_new_song('Your Power', 4, '00:04:05', 1, 'https://cdn.com/yourpower.mp3', FALSE, 4);
+    PERFORM add_new_song('Happier Than Ever', 4, '00:04:58', 1, 'https://cdn.com/happierthanever.mp3', FALSE, 4);
 
-    -- Album 5
-    (9, 'Blinding Lights', 5, 5, 3, '00:03:20', 'https://cdn.com/blindinglights.mp3', FALSE),
-    (10, 'Heartless', 5, 5, 3, '00:03:18', 'https://cdn.com/heartless.mp3', TRUE),
+    -- Album 5 songs
+    PERFORM add_new_song('Blinding Lights', 5, '00:03:20', 3, 'https://cdn.com/blindinglights.mp3', FALSE, 5);
+    PERFORM add_new_song('Heartless', 5, '00:03:18', 3, 'https://cdn.com/heartless.mp3', TRUE, 5);
 
-    -- Album 6
-    (11, 'Positions', 6, 6, 1, '00:02:52', 'https://cdn.com/positions.mp3', FALSE),
-    (12, '34+35', 6, 6, 1, '00:02:54', 'https://cdn.com/34plus35.mp3', TRUE),
+    -- Album 6 songs
+    PERFORM add_new_song('Positions', 6, '00:02:52', 1, 'https://cdn.com/positions.mp3', FALSE, 6);
+    PERFORM add_new_song('34+35', 6, '00:02:54', 1, 'https://cdn.com/34plus35.mp3', TRUE, 6);
 
-    -- Album 7
-    (13, 'Shivers', 7, 7, 1, '00:03:27', 'https://cdn.com/shivers.mp3', FALSE),
-    (14, 'Bad Habits', 7, 7, 1, '00:03:50', 'https://cdn.com/badhabits.mp3', FALSE),
+    -- Album 7 songs
+    PERFORM add_new_song('Shivers', 7, '00:03:27', 1, 'https://cdn.com/shivers.mp3', FALSE, 7);
+    PERFORM add_new_song('Bad Habits', 7, '00:03:50', 1, 'https://cdn.com/badhabits.mp3', FALSE, 7);
 
-    -- Album 8
-    (15, 'Levitating', 8, 8, 1, '00:03:23', 'https://cdn.com/levitating.mp3', FALSE),
-    (16, 'Physical', 8, 8, 1, '00:03:13', 'https://cdn.com/physical.mp3', FALSE),
+    -- Album 8 songs
+    PERFORM add_new_song('Levitating', 8, '00:03:23', 1, 'https://cdn.com/levitating.mp3', FALSE, 8);
+    PERFORM add_new_song('Physical', 8, '00:03:13', 1, 'https://cdn.com/physical.mp3', FALSE, 8);
 
-    -- Album 9
-    (17, 'Yo Perreo Sola', 9, 9, 5, '00:02:51', 'https://cdn.com/yoperreo.mp3', TRUE),
-    (18, 'La Difícil', 9, 9, 5, '00:03:22', 'https://cdn.com/ladificil.mp3', TRUE),
+    -- Album 9 songs
+    PERFORM add_new_song('Yo Perreo Sola', 9, '00:02:51', 5, 'https://cdn.com/yoperreo.mp3', TRUE, 9);
+    PERFORM add_new_song('La Difícil', 9, '00:03:22', 5, 'https://cdn.com/ladificil.mp3', TRUE, 9);
 
-    -- Album 10
-    (19, 'drivers license', 10, 10, 1, '00:04:02', 'https://cdn.com/driverslicense.mp3', FALSE),
-    (20, 'good 4 u', 10, 10, 1, '00:02:58', 'https://cdn.com/good4u.mp3', TRUE);
+    -- Album 10 songs
+    PERFORM add_new_song('drivers license', 10, '00:04:02', 1, 'https://cdn.com/driverslicense.mp3', FALSE, 10);
+    PERFORM add_new_song('good 4 u', 10, '00:02:58', 1, 'https://cdn.com/good4u.mp3', TRUE, 10);
+
+    -- Some singles without albums
+    PERFORM add_new_song('Single Track 2', 7, '00:03:10', 1, 'https://cdn.com/singletrack2.mp3', FALSE, NULL);
+    PERFORM add_new_song('Single Track 3', 8, '00:03:05', 2, 'https://cdn.com/singletrack3.mp3', TRUE, NULL);
+
+END;
+$$ LANGUAGE plpgsql;
 
 INSERT INTO song_stream_counts (song_id, stream_count) VALUES
     (1, 800000000),
