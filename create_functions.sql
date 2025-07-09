@@ -120,34 +120,37 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Playlist
-CREATE OR REPLACE FUNCTION get_songs_from_playlist(
-    p_playlist_id INT
-)
+CREATE OR REPLACE FUNCTION get_playlist_details(p_playlist_id INT)
 RETURNS TABLE (
+    playlist_id INT,
+    playlist_name VARCHAR,
+    cover_url TEXT,
+    owner_id INT,
     song_id INT,
-    title VARCHAR,
+    song_title VARCHAR,
     artist_name VARCHAR,
     duration INTERVAL,
-    genre_id INT,
     file_url TEXT,
-    explicit BOOLEAN,
     "position" INT
 ) AS $$
 BEGIN
     RETURN QUERY
     SELECT
+        p.playlist_id,
+        p.title,
+        p.cover_url,
+        p.user_id,
         s.song_id,
         s.title,
         a.name AS artist_name,
         s.duration,
-        s.genre_id,
         s.file_url,
-        s.explicit,
         ps."position"
-    FROM playlist_songs ps
+    FROM playlists p
+    JOIN playlist_songs ps ON p.playlist_id = ps.playlist_id
     JOIN songs s ON ps.song_id = s.song_id
     JOIN artists a ON s.artist_id = a.artist_id
-    WHERE ps.playlist_id = p_playlist_id
+    WHERE p.playlist_id = p_playlist_id
     ORDER BY ps."position";
 END;
 $$ LANGUAGE plpgsql;
