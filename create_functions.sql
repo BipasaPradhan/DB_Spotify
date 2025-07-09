@@ -611,3 +611,21 @@ BEGIN
       AND ad.target_type = 'album';
 END;
 $$ LANGUAGE plpgsql;
+
+-- Get subscriptions
+CREATE OR REPLACE FUNCTION get_user_subscription(p_user_id INT)
+RETURNS subscription_plan AS $$
+DECLARE
+    v_plan subscription_plan;
+BEGIN
+    SELECT plan INTO v_plan
+    FROM subscription
+    WHERE user_id = p_user_id;
+
+    IF v_plan IS NULL THEN
+        RAISE EXCEPTION 'No subscription found for user ID %', p_user_id;
+    END IF;
+
+    RETURN v_plan;
+END;
+$$ LANGUAGE plpgsql;
