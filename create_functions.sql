@@ -674,3 +674,23 @@ BEGIN
     ORDER BY s.stream_count DESC;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Get all artists
+CREATE OR REPLACE FUNCTION get_all_artists()
+RETURNS TABLE (
+    artist_id INT,
+    name varchar,
+    bio TEXT,
+    image_url TEXT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        a.artist_id,
+        a.name,
+        a.bio,
+        a.image_url
+    FROM artists a
+    ORDER BY a.name;
+END;
+$$ LANGUAGE plpgsql;
