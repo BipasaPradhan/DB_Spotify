@@ -52,7 +52,7 @@ CREATE TABLE songs (
     song_id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     artist_id INTEGER NOT NULL,
-    album_id INTEGER NOT NULL,
+    album_id INTEGER,
     genre_id INTEGER,
     duration INTERVAL,
     file_url TEXT NOT NULL,
