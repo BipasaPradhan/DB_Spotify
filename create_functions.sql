@@ -694,3 +694,62 @@ BEGIN
     ORDER BY a.name;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Filter by artist
+CREATE OR REPLACE FUNCTION filter_songs_by_artist(p_artist_id INT)
+RETURNS TABLE (
+    song_id INT,
+    title VARCHAR,
+    duration INTERVAL,
+    file_url TEXT,
+    stream_count BIGINT,
+    is_explicit BOOLEAN,
+    album_id INT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        s.song_id,
+        s.title,
+        s.duration,
+        s.file_url,
+        s.stream_count,
+        s.explicit,
+        s.album_id
+    FROM songs s
+    WHERE s.artist_id = p_artist_id
+    ORDER BY s.title;  -- optional: sort alphabetically
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get all concerts
+CREATE OR REPLACE FUNCTION get_all_concerts()
+RETURNS TABLE (
+    concert_id INT,
+    title varchar,
+    artist_id INT,
+    country varchar,
+    city varchar,
+    venue varchar,
+    date DATE,
+    "time" TIME,
+    ticket_url TEXT,
+    is_cancelled BOOLEAN
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        c.concert_id,
+        c.title,
+        c.artist_id,
+        c.country,
+        c.city,
+        c.venue,
+        c.date,
+        c."time",
+        c.ticket_url,
+        c.is_cancelled
+    FROM concerts c
+    ORDER BY c.date, c."time";
+END;
+$$ LANGUAGE plpgsql;
