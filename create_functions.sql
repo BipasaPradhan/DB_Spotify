@@ -247,6 +247,20 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Follow function
+CREATE OR REPLACE FUNCTION add_follow(
+    p_follower_id INT,
+    p_followed_id UUID,
+    p_type follow_type
+)
+RETURNS VOID AS $$
+BEGIN
+    INSERT INTO follows (follower_id, followed_id, type)
+    VALUES (p_follower_id, p_followed_id, p_type)
+    ON CONFLICT DO NOTHING;
+END;
+$$ LANGUAGE plpgsql;
+
 
 
 

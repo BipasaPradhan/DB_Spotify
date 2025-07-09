@@ -238,3 +238,15 @@ SELECT login_oauth_user(
                NULL,
                'Nina'
        );
+
+-- Add follows
+select add_follow(5, 6, 'user');
+select add_follow(8, 3, 'artist');
+select add_follow(8, 6, 'user');
+select add_follow(5, 4, 'artist');
+select add_follow(5, 6, 'artist');
+select add_follow(10, 6, 'user');
+select add_follow(11, 7, 'user');
+select add_follow(12, 8, 'artist');
+select add_follow(5, 8, 'artist');
+select add_follow(5, 7, 'user');
