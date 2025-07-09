@@ -318,3 +318,149 @@ select add_user_subscription(12, 'free');
 select add_user_subscription(13, 'student');
 select add_user_subscription(14, 'family');
 select add_user_subscription(15, 'family');
+
+
+
+-- Extras/Unordered
+CREATE OR REPLACE FUNCTION add_artist(
+    p_name VARCHAR,
+    p_bio TEXT DEFAULT NULL,
+    p_image_url TEXT DEFAULT NULL
+)
+RETURNS INTEGER AS $$
+DECLARE
+    new_artist_id INTEGER;
+BEGIN
+    INSERT INTO artists (name, bio, image_url)
+    VALUES (p_name, p_bio, p_image_url)
+    RETURNING artist_id INTO new_artist_id;
+
+    RETURN new_artist_id;
+END;
+$$ LANGUAGE plpgsql;
+
+
+DO $$
+    BEGIN
+        PERFORM add_artist('Leven Kali', 'Wow!', '.jpg');
+        PERFORM add_artist('Adi Oasis', 'I love bass', 'wow.jpeg');
+        Perform add_artist('Christian Kuria', 'Yay', '.jpeg');
+        PERFORM add_artist('wave to earth', 'saranghe', '.jpeg');
+        PERFORM add_artist('RINI', 'Rnb!', 'rini.jpeg');
+    end;
+    $$;
+
+CREATE OR REPLACE FUNCTION add_album(
+    p_title VARCHAR,
+    p_artist_id INT,
+    p_release_date DATE DEFAULT NULL,
+    p_cover_url TEXT DEFAULT NULL
+)
+RETURNS INTEGER AS $$
+DECLARE
+    new_album_id INTEGER;
+BEGIN
+    INSERT INTO albums (title, artist_id, release_date, cover_url)
+    VALUES (p_title, p_artist_id, p_release_date, p_cover_url)
+    RETURNING album_id INTO new_album_id;
+
+    RETURN new_album_id;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+DO $$
+BEGIN
+
+    -- Album 2 songs
+    PERFORM add_new_song('Girls Want Girls', 2, '00:03:41', 2, 'https://cdn.com/gwg.mp3', TRUE, 14);
+    PERFORM add_new_song('Champagne Poetry', 2, '00:05:36', 2, 'https://cdn.com/champagnepoetry.mp3', FALSE, 14);
+
+    -- Album 3 songs
+    PERFORM add_new_song('Black Swan', 3, '00:03:18', 3, 'https://cdn.com/blackswan.mp3', FALSE, 15);
+    PERFORM add_new_song('ON', 3, '00:04:06', 3, 'https://cdn.com/on.mp3', FALSE, 15);
+
+    -- Album 4 songs
+    PERFORM add_new_song('Getting Older', 4, '00:04:05', 1, 'https://cdn.com/yourpower.mp3', FALSE, 16);
+    PERFORM add_new_song('I Didnt Change My Number', 4, '00:04:58', 1, 'https://cdn.com/happierthanever.mp3', TRUE, 16);
+    PERFORM add_new_song('Billie Bossa Nova', 4, '00:04:58', 1, 'https://cdn.com/bossa.mp3', FALSE, 16);
+    PERFORM add_new_song('my future', 4, '00:04:58', 1, 'https://cdn.com/future.mp3', FALSE, 16);
+
+
+    -- Album 5 songs
+    PERFORM add_new_song('Blinding Lights', 5, '00:03:20', 3, 'https://cdn.com/blindinglights.mp3', FALSE, 17);
+    PERFORM add_new_song('Heartless', 5, '00:03:18', 3, 'https://cdn.com/heartless.mp3', TRUE, 17);
+
+    -- Album 6 songs
+    PERFORM add_new_song('Positions', 6, '00:02:52', 1, 'https://cdn.com/positions.mp3', FALSE, 18);
+    PERFORM add_new_song('34+35', 6, '00:02:54', 1, 'https://cdn.com/34plus35.mp3', TRUE, 18);
+
+    -- Album 7 songs
+    PERFORM add_new_song('Shivers', 7, '00:03:27', 1, 'https://cdn.com/shivers.mp3', FALSE, 19);
+    PERFORM add_new_song('Bad Habits', 7, '00:03:50', 1, 'https://cdn.com/badhabits.mp3', FALSE, 19);
+
+    -- Album 8 songs
+    PERFORM add_new_song('Levitating', 8, '00:03:23', 1, 'https://cdn.com/levitating.mp3', FALSE, 20);
+    PERFORM add_new_song('Physical', 8, '00:03:13', 1, 'https://cdn.com/physical.mp3', FALSE, 20);
+
+    -- Album 9 songs
+    PERFORM add_new_song('Yo Perreo Sola', 9, '00:02:51', 5, 'https://cdn.com/yoperreo.mp3', TRUE, 21);
+    PERFORM add_new_song('La Difícil', 9, '00:03:22', 5, 'https://cdn.com/ladificil.mp3', TRUE, 21);
+
+    -- Album 10 songs
+    PERFORM add_new_song('drivers license', 10, '00:04:02', 1, 'https://cdn.com/driverslicense.mp3', FALSE, 22);
+    PERFORM add_new_song('good 4 u', 10, '00:02:58', 1, 'https://cdn.com/good4u.mp3', TRUE, 22);
+
+    -- Some singles without albums
+    PERFORM add_new_song('Single Track 2', 7, '00:03:10', 1, 'https://cdn.com/singletrack2.mp3', FALSE, NULL);
+    PERFORM add_new_song('Single Track 3', 8, '00:03:05', 2, 'https://cdn.com/singletrack3.mp3', TRUE, NULL);
+
+END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE songs
+ADD COLUMN featured_artist_id INT REFERENCES artists(artist_id);
+
+CREATE OR REPLACE FUNCTION add_new_song(
+    p_title VARCHAR,
+    p_artist_id INT,
+    p_duration INTERVAL,
+    p_genre_id INT,
+    p_file_url TEXT,
+    p_is_explicit BOOLEAN,
+    p_album_id INT,
+    p_featured_artist_id INT DEFAULT NULL
+)
+RETURNS INTEGER AS $$
+DECLARE
+    new_song_id INTEGER;
+BEGIN
+    INSERT INTO songs (
+        title,
+        artist_id,
+        duration,
+        genre_id,
+        file_url,
+        explicit,
+        album_id,
+        featured_artist_id
+    )
+    VALUES (
+        p_title,
+        p_artist_id,
+        p_duration,
+        p_genre_id,
+        p_file_url,
+        p_is_explicit,
+        p_album_id,
+        p_featured_artist_id
+    )
+    RETURNING song_id INTO new_song_id;
+
+    RETURN new_song_id;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
