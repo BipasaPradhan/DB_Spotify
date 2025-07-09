@@ -723,6 +723,7 @@ BEGIN
         a.bio,
         a.image_url
     FROM artists a
+    WHERE a.is_deleted = FALSE
     ORDER BY a.name;
 END;
 $$ LANGUAGE plpgsql;
@@ -750,6 +751,7 @@ BEGIN
         s.album_id
     FROM songs s
     WHERE s.artist_id = p_artist_id
+    AND s.is_deleted = FALSE
     ORDER BY s.title;  -- optional: sort alphabetically
 END;
 $$ LANGUAGE plpgsql;
