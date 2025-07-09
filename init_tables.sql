@@ -104,13 +104,11 @@ CREATE TABLE follows (
 );
 
 
-CREATE TABLE subscriptions (
+CREATE TABLE subscription (
     sub_id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
+    user_id INT UNIQUE REFERENCES users(user_id) ON DELETE CASCADE,
     plan subscription_plan NOT NULL,
-    start_date DATE NOT NULL,
-
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    start_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE song_stream_counts (
