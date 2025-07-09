@@ -858,3 +858,96 @@ SET
 WHERE song_id = p_song_id;
 END;
 $$ LANGUAGE plpgsql;
+
+-- More for crud
+CREATE OR REPLACE FUNCTION soft_delete_song_by_artist(
+    p_artist_id INT,
+    p_song_id INT
+)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE songs
+    SET is_deleted = TRUE
+    WHERE song_id = p_song_id
+      AND artist_id = p_artist_id;
+
+    -- Optionally, you can check if any row was updated
+    IF NOT FOUND THEN
+        RAISE NOTICE 'No song found for artist_id = %, song_id = %', p_artist_id, p_song_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_albums_by_artist(p_artist_id INT)
+RETURNS TABLE (
+    album_id INT,
+    title varchar,
+    release_date DATE,
+    cover_url TEXT,
+    is_deleted BOOLEAN
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        a.album_id,
+        a.title,
+        a.release_date,
+        a.cover_url,
+        a.is_delete
+    FROM albums a
+    WHERE a.artist_id = p_artist_id
+      AND a.is_delete = FALSE
+    ORDER BY a.release_date DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+select * from get_albums_by_artist(5);
+
+CREATE OR REPLACE FUNCTION edit_album(
+    p_artist_id INT,
+    p_album_id INT,
+    p_title TEXT,
+    p_release_date DATE,
+    p_cover_url TEXT
+)
+RETURNS VOID AS $$
+DECLARE
+    owner_id INT;
+BEGIN
+    -- Check album ownership
+    SELECT artist_id INTO owner_id
+    FROM albums
+    WHERE album_id = p_album_id;
+
+    IF owner_id IS NULL THEN
+        RAISE EXCEPTION 'Album with ID % does not exist', p_album_id;
+    ELSIF owner_id <> p_artist_id THEN
+        RAISE EXCEPTION 'Permission denied: artist % cannot edit album % owned by artist %', p_artist_id, p_album_id, owner_id;
+    END IF;
+
+    -- Proceed with update
+    UPDATE albums
+    SET
+        title = COALESCE(p_title, title),
+        release_date = COALESCE(p_release_date, release_date),
+        cover_url = COALESCE(p_cover_url, cover_url)
+    WHERE album_id = p_album_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION soft_delete_album_by_artist(
+    p_artist_id INT,
+    p_album_id INT
+)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE albums
+    SET is_delete = TRUE
+    WHERE album_id = p_album_id
+      AND artist_id = p_artist_id;
+
+    IF NOT FOUND THEN
+        RAISE NOTICE 'No album found for artist_id = %, album_id = %', p_artist_id, p_album_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
