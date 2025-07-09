@@ -123,5 +123,5 @@ CREATE TABLE concerts (
     ticket_url      TEXT,
     is_cancelled    BOOLEAN DEFAULT FALSE,
 
-    FOREIGN KEY (artist_id) REFERENCES artists(artist_id)
+    FOREIGN KEY (artist_id) REFERENCES artists(artist_id) ON DELETE CASCADE
 );
