@@ -51,10 +51,10 @@ CREATE OR REPLACE FUNCTION login_oauth_user(
     p_provider_user_id VARCHAR,     -- the unique ID from the provider
     p_email VARCHAR,
     p_username VARCHAR DEFAULT NULL
-)
-RETURNS INTEGER AS $$
+) RETURNS INTEGER AS $$
 DECLARE
     uid INTEGER;
+    v_email VARCHAR;
 BEGIN
     -- Look up existing user by provider + external ID
     SELECT user_id INTO uid
@@ -64,17 +64,26 @@ BEGIN
 
     -- If not found, insert new user
     IF uid IS NULL THEN
+        -- Generate email for phone login if not provided
+        IF p_provider = 'phone' AND p_email IS NULL THEN
+            v_email := p_provider_user_id || '@phone.login';
+        ELSE
+            v_email := p_email;
+        END IF;
+
         INSERT INTO users (
             username,
             email,
             login_provider,
-            provider_user_id
+            provider_user_id,
+            phone -- assume your users table has this column
         )
         VALUES (
-            COALESCE(p_username, p_email),
-            p_email,
+            COALESCE(p_username, v_email),
+            v_email,
             p_provider,
-            p_provider_user_id
+            p_provider_user_id,
+            CASE WHEN p_provider = 'phone' THEN p_provider_user_id ELSE NULL END
         )
         RETURNING user_id INTO uid;
     END IF;
@@ -82,6 +91,7 @@ BEGIN
     RETURN uid;
 END;
 $$ LANGUAGE plpgsql;
+
 
 
 -- Update user
