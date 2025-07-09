@@ -141,10 +141,19 @@ INSERT INTO playlist_songs (playlist_id, song_id, position) VALUES
     (3, 16, 4),
     (3, 18, 5);
 
+-- Add media like
 INSERT INTO adds (user_id, target_type, target_id) VALUES
                                                        (5, 'playlist', 1),
                                                        (8, 'playlist', 3),
                                                        (6, 'album', 2);
+select add_media_to_library(10, 7, 'album');
+select add_media_to_library(10, 12, 'song');
+select add_media_to_library(10, 13, 'song');
+select add_media_to_library(11, 4, 'album');
+select add_media_to_library(12, 15, 'song');
+select add_media_to_library(13, 2, 'playlist');
+select add_media_to_library(5, 3, 'song');
+
 
 -- Adding users by register
 select register_user(
