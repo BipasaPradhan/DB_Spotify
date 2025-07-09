@@ -535,3 +535,79 @@ BEGIN
     WHERE s.song_id = p_song_id;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Set user account_type (backend)
+CREATE OR REPLACE FUNCTION set_user_account_type(
+    p_user_id INT,
+    p_account_type varchar
+)
+RETURNS BOOLEAN AS $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM users WHERE user_id = p_user_id) THEN
+        RAISE EXCEPTION 'User ID % does not exist', p_user_id;
+    END IF;
+
+    UPDATE users
+    SET account_type = p_account_type
+    WHERE user_id = p_user_id;
+
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get full library + liked albums/playlists not owned by user
+CREATE OR REPLACE FUNCTION get_user_library_full(p_user_id INT)
+RETURNS TABLE (
+    media_type media_target_type,
+    id INT,
+    title varchar,
+    cover_url TEXT,
+    owner_id INT,
+    is_owned BOOLEAN
+) AS $$
+BEGIN
+    RETURN QUERY
+
+    -- 1. Playlists the user owns
+    SELECT
+        'playlist'::media_target_type,
+        p.playlist_id,
+        p.title,
+        p.cover_url,
+        p.user_id,
+        TRUE AS is_owned
+    FROM playlists p
+    WHERE p.user_id = p_user_id
+
+    UNION
+
+    -- 2. Playlists the user added (but doesn’t own)
+    SELECT
+        'playlist'::media_target_type,
+        p.playlist_id,
+        p.title,
+        p.cover_url,
+        p.user_id,
+        FALSE
+    FROM adds a
+    JOIN playlists p ON a.target_id = p.playlist_id
+    WHERE a.user_id = p_user_id
+      AND a.target_type = 'playlist'
+      AND p.user_id <> p_user_id
+
+    UNION
+
+    -- 4. Albums the user added
+    SELECT
+        'album'::media_target_type,
+        a.album_id,
+        a.title,
+        a.cover_url,
+        a.artist_id,
+        FALSE
+    FROM adds ad
+    JOIN albums a ON ad.target_id = a.album_id
+    WHERE ad.user_id = p_user_id
+      AND ad.target_type = 'album';
+END;
+$$ LANGUAGE plpgsql;
