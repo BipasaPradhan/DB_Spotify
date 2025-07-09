@@ -439,21 +439,23 @@ $$ LANGUAGE plpgsql;
 
 -- Add new playlist
 CREATE OR REPLACE FUNCTION add_playlist(
-    p_playlist_id INT,
     p_title TEXT,
     p_user_id INT,
     p_is_public BOOLEAN
 )
     RETURNS INT AS $$
+DECLARE
+    new_id INT;
 BEGIN
     INSERT INTO playlists (
-        playlist_id, title, user_id, is_public, created_at
+        title, user_id, is_public, created_at
     )
     VALUES (
-               p_playlist_id, p_title, p_user_id, p_is_public, CURRENT_TIMESTAMP
-           );
+               p_title, p_user_id, p_is_public, CURRENT_TIMESTAMP
+           )
+    RETURNING playlist_id INTO new_id;
 
-    RETURN p_playlist_id;
+    RETURN new_id;
 END;
 $$ LANGUAGE plpgsql;
 
