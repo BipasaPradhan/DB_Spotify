@@ -57,11 +57,6 @@ INSERT INTO concerts (concert_id, artist_id, title, country, city, venue, date, 
 SELECT add_new_song('Single Track', 5, '00:03:20', 2, 'url.mp3', false);
 DO $$
 BEGIN
-    -- Album 1 songs
-    PERFORM add_new_song('Anti-Hero', 1, '00:03:20', 1, 'https://cdn.com/antihero.mp3', FALSE, 1);
-    PERFORM add_new_song('Lavender Haze', 1, '00:03:22', 1, 'https://cdn.com/lavenderhaze.mp3', FALSE, 1);
-    -- Single without album
-    PERFORM add_new_song('Single Track 1', 5, '00:03:20', 2, 'https://cdn.com/singletrack1.mp3', FALSE, NULL);
 
     -- Album 2 songs
     PERFORM add_new_song('Girls Want Girls', 2, '00:03:41', 2, 'https://cdn.com/gwg.mp3', TRUE, 2);
@@ -72,16 +67,19 @@ BEGIN
     PERFORM add_new_song('ON', 3, '00:04:06', 3, 'https://cdn.com/on.mp3', FALSE, 3);
 
     -- Album 4 songs
-    PERFORM add_new_song('Your Power', 4, '00:04:05', 1, 'https://cdn.com/yourpower.mp3', FALSE, 4);
-    PERFORM add_new_song('Happier Than Ever', 4, '00:04:58', 1, 'https://cdn.com/happierthanever.mp3', FALSE, 4);
+    PERFORM add_new_song('Getting Older', 4, '00:04:05', 1, 'https://cdn.com/yourpower.mp3', FALSE, 6);
+    PERFORM add_new_song("I Didn't Change My Number", 4, '00:04:58', 1, 'https://cdn.com/happierthanever.mp3', TRUE, 6);
+    PERFORM add_new_song("Billie Bossa Nova", 4, '00:04:58', 1, 'https://cdn.com/bossa.mp3', FALSE, 6);
+    PERFORM add_new_song("my future", 4, '00:04:58', 1, 'https://cdn.com/future.mp3', FALSE, 6);
+
 
     -- Album 5 songs
     PERFORM add_new_song('Blinding Lights', 5, '00:03:20', 3, 'https://cdn.com/blindinglights.mp3', FALSE, 5);
     PERFORM add_new_song('Heartless', 5, '00:03:18', 3, 'https://cdn.com/heartless.mp3', TRUE, 5);
 
     -- Album 6 songs
-    PERFORM add_new_song('Positions', 6, '00:02:52', 1, 'https://cdn.com/positions.mp3', FALSE, 6);
-    PERFORM add_new_song('34+35', 6, '00:02:54', 1, 'https://cdn.com/34plus35.mp3', TRUE, 6);
+    PERFORM add_new_song('Positions', 6, '00:02:52', 1, 'https://cdn.com/positions.mp3', FALSE, 4);
+    PERFORM add_new_song('34+35', 6, '00:02:54', 1, 'https://cdn.com/34plus35.mp3', TRUE, 4);
 
     -- Album 7 songs
     PERFORM add_new_song('Shivers', 7, '00:03:27', 1, 'https://cdn.com/shivers.mp3', FALSE, 7);
@@ -134,28 +132,26 @@ INSERT INTO playlists (playlist_id, title, user_id, is_public, created_at) VALUE
     (3, 'K-Pop Collection', 8, FALSE, CURRENT_TIMESTAMP);
 
 -- Playlist 1: Chill Pop
-INSERT INTO playlist_songs (playlist_id, song_id, position) VALUES
-    (1, 1, 1),
-    (1, 2, 2),
-    (1, 11, 3),
-    (1, 15, 4),
-    (1, 19, 5);
+SELECT add_song_to_playlist(1, 1, 1);
+SELECT add_song_to_playlist(1, 2, 2);
+SELECT add_song_to_playlist(1, 11, 3);
+SELECT add_song_to_playlist(1, 15, 4);
+SELECT add_song_to_playlist(1, 19, 5);
 
 -- Playlist 2: Hype Hip-Hop
-INSERT INTO playlist_songs (playlist_id, song_id, position) VALUES
-    (2, 3, 1),
-    (2, 4, 2),
-    (2, 10, 3),
-    (2, 12, 4),
-    (2, 20, 5);
+SELECT add_song_to_playlist(2, 1, 1);
+SELECT add_song_to_playlist(2, 4, 2);
+SELECT add_song_to_playlist(2, 10, 3);
+SELECT add_song_to_playlist(2, 12, 4);
+SELECT add_song_to_playlist(2, 20, 5);
 
 -- Playlist 3: K-Pop Collection
-INSERT INTO playlist_songs (playlist_id, song_id, position) VALUES
-    (3, 5, 1),
-    (3, 6, 2),
-    (3, 9, 3),
-    (3, 16, 4),
-    (3, 18, 5);
+SELECT add_song_to_playlist(3, 5, 1);
+SELECT add_song_to_playlist(3, 6, 2);
+SELECT add_song_to_playlist(3, 9, 3);
+SELECT add_song_to_playlist(3, 16, 4);
+SELECT add_song_to_playlist(3, 18, 5);
+
 
 -- Add media like
 INSERT INTO adds (user_id, target_type, target_id) VALUES

@@ -111,13 +111,6 @@ CREATE TABLE subscription (
     start_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE song_stream_counts (
-    song_id INTEGER PRIMARY KEY,
-    stream_count BIGINT DEFAULT 0,
-
-    FOREIGN KEY (song_id) REFERENCES songs(song_id) ON DELETE CASCADE
-);
-
 CREATE TABLE concerts (
     concert_id      SERIAL PRIMARY KEY,
     artist_id       INTEGER NOT NULL,

@@ -471,3 +471,32 @@ BEGIN
     RETURN p_position;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Get album and songs
+CREATE OR REPLACE FUNCTION get_album_with_songs(p_album_id INT)
+RETURNS TABLE (
+    album_id INT,
+    album_title VARCHAR,
+    release_date DATE,
+    artist_name VARCHAR,
+    song_id INT,
+    song_title VARCHAR,
+    duration interval
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        a.album_id,
+        a.title,
+        a.release_date,
+        ar.name,
+        s.song_id,
+        s.title,
+        s.duration
+    FROM albums a
+    JOIN artists ar ON a.artist_id = ar.artist_id
+    JOIN songs s ON s.album_id = a.album_id
+    WHERE a.album_id = p_album_id;
+END;
+$$ LANGUAGE plpgsql;
+
