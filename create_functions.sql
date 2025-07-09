@@ -771,3 +771,58 @@ BEGIN
     WHERE artist_id = p_artist_id;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION add_song_for_artist(
+    p_artist_id INT,
+    p_title VARCHAR,
+    p_duration INTERVAL,
+    p_genre_id INT,
+    p_file_url TEXT,
+    p_explicit BOOLEAN,
+    p_album_id INT DEFAULT NULL
+)
+    RETURNS INT AS $$
+BEGIN
+RETURN add_new_song(
+        p_title           => p_title,
+        p_artist_id       => p_artist_id,
+        p_duration        => p_duration,
+        p_genre_id        => p_genre_id,
+        p_file_url        => p_file_url,
+        p_explicit        => p_explicit,
+        p_album_id        => p_album_id
+       );
+END;
+$$ LANGUAGE plpgsql;
+
+-- Edit a song for a specific artist (only if artist_id matches)
+CREATE OR REPLACE FUNCTION edit_song_for_artist(
+    p_song_id INT,
+    p_artist_id INT,
+    p_title VARCHAR DEFAULT NULL,
+    p_duration INTERVAL DEFAULT NULL,
+    p_genre_id INT DEFAULT NULL,
+    p_file_url TEXT DEFAULT NULL,
+    p_explicit BOOLEAN DEFAULT NULL,
+    p_album_id INT DEFAULT NULL
+)
+RETURNS VOID AS $$
+BEGIN
+    -- Ensure the artist owns the song
+    IF NOT EXISTS (
+        SELECT 1 FROM songs WHERE song_id = p_song_id AND artist_id = p_artist_id
+    ) THEN
+        RAISE EXCEPTION 'Permission denied: Artist % does not own Song %', p_artist_id, p_song_id;
+END IF;
+
+UPDATE songs
+SET
+    title = COALESCE(p_title, title),
+    duration = COALESCE(p_duration, duration),
+    genre_id = COALESCE(p_genre_id, genre_id),
+    file_url = COALESCE(p_file_url, file_url),
+    explicit = COALESCE(p_explicit, explicit),
+    album_id = COALESCE(p_album_id, album_id)
+WHERE song_id = p_song_id;
+END;
+$$ LANGUAGE plpgsql;
