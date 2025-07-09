@@ -250,3 +250,15 @@ select add_follow(11, 7, 'user');
 select add_follow(12, 8, 'artist');
 select add_follow(5, 8, 'artist');
 select add_follow(5, 7, 'user');
+
+-- Add subscriptions
+select add_user_subscription(5, 'free');
+select add_user_subscription(6, 'student');
+select add_user_subscription(8, 'family');
+select add_user_subscription(9, 'free');
+select add_user_subscription(10, 'free');
+select add_user_subscription(11, 'family');
+select add_user_subscription(12, 'free');
+select add_user_subscription(13, 'student');
+select add_user_subscription(14, 'family');
+select add_user_subscription(15, 'family');

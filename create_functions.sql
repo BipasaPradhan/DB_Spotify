@@ -2,7 +2,7 @@
 CREATE OR REPLACE FUNCTION register_user(
     p_username VARCHAR,
     p_email VARCHAR,
-    p_password TEXT,
+    p_password TEXT
 )
 RETURNS INTEGER AS $$
 DECLARE
