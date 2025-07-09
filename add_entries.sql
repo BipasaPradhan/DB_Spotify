@@ -40,7 +40,14 @@ INSERT INTO albums (album_id, artist_id, title, release_date, cover_url) VALUES
 INSERT INTO concerts (concert_id, artist_id, title, country, city, venue, date, time, ticket_url, is_cancelled) VALUES
     (1, 1, 'Live in Tokyo', 'Japan', 'Tokyo', 'Tokyo Dome', '2025-08-10', '19:00', 'https://tickets.com/tokyo', FALSE),
     (2, 2, 'Acoustic Night', 'USA', 'New York', 'Madison Square Garden', '2025-09-05', '20:30', 'https://tickets.com/nyc', FALSE),
-    (3, 3, 'Cancelled Tour', 'UK', 'London', 'O2 Arena', '2025-07-20', '18:00', 'https://tickets.com/london', TRUE);
+    (3, 3, 'Cancelled Tour', 'UK', 'London', 'O2 Arena', '2025-07-20', '18:00', 'https://tickets.com/london', TRUE),
+    (4, 4, 'Eyelashes', 'UK', 'Bristol', 'Bristol Venue', '2025-10-24', '19:00','https://tickets.com/bristol', FALSE),
+    (5, 5, 'My Weekend', 'Thailand', 'Bangkok', 'Siam Stadium', '2025-9-30', '19:30', 'https://tickets.com/bangkok', TRUE),
+    (6, 6, 'Grand Opening', 'Italy', 'Rome', 'Piza Tower', '2025-11-24', '21:00', 'https://tickets.com/rome', FALSE),
+    (7, 7, 'Your Shape', 'Philippines', 'Manila', 'National Stadium', '2025-10-31', '20:00', 'https://tickets.com/manila', FALSE),
+    (8, 8, 'Duolingo', 'USA', 'Austin', 'Austin Texas Stadium', '2026-1-2', '20:30', 'https://tickets.com/austin', TRUE),
+    (9, 9, 'Lola Bunny', 'China', 'Shanghai', 'Shanghai Dome', '2025-11-11', '19:30', 'https://ccp.com/shanghai', FALSE),
+    (10, 10, 'Olive Garden', 'Greece', 'Athens', 'Athena Colosseum', '2025-8-8', '18:30', 'https://tickets.com/athens', FALSE);
 
 INSERT INTO songs (song_id, title, artist_id, album_id, genre_id, duration, file_url, explicit) VALUES
     -- Album 1
@@ -134,6 +141,10 @@ INSERT INTO playlist_songs (playlist_id, song_id, position) VALUES
     (3, 16, 4),
     (3, 18, 5);
 
+INSERT INTO adds (user_id, target_type, target_id) VALUES
+                                                       (5, 'playlist', 1),
+                                                       (8, 'playlist', 3),
+                                                       (6, 'album', 2);
 
 -- Adding users by register
 select register_user(
