@@ -19,7 +19,12 @@ INSERT INTO genres (genre_id, name) VALUES
     (2, 'Hip Hop'),
     (3, 'R&B'),
     (4, 'K-Pop'),
-    (5, 'Latin');
+    (5, 'Latin'),
+    (6, 'Rock'),
+    (7, 'Electronic'),
+    (8, 'Jazz'),
+    (9, 'Classical'),
+    (10, 'Afrobeats');
 
 -- Script for album
 
@@ -115,7 +120,14 @@ INSERT INTO song_stream_counts (song_id, stream_count) VALUES
 INSERT INTO playlists (playlist_id, title, user_id, is_public, created_at) VALUES
     (1, 'Chill Pop', 5, TRUE, CURRENT_TIMESTAMP),
     (2, 'Hype Hip-Hop', 6, TRUE, CURRENT_TIMESTAMP),
-    (3, 'K-Pop Collection', 8, FALSE, CURRENT_TIMESTAMP);
+    (3, 'K-Pop Collection', 8, FALSE, CURRENT_TIMESTAMP),
+    (4, 'Late Night R&B', 14, TRUE, CURRENT_TIMESTAMP),
+    (5, 'Latin Vibes', 9, TRUE, CURRENT_TIMESTAMP),
+    (6, 'Workout Boost', 6, FALSE, CURRENT_TIMESTAMP),
+    (7, 'Sad Bangers', 10, TRUE, CURRENT_TIMESTAMP),
+    (8, 'Throwback Hits', 5, TRUE, CURRENT_TIMESTAMP),
+    (9, 'Weekend Chill', 8, FALSE, CURRENT_TIMESTAMP),
+    (10, 'Global 100', 15, TRUE, CURRENT_TIMESTAMP);
 
 -- Playlist 1: Chill Pop
 INSERT INTO playlist_songs (playlist_id, song_id, position) VALUES
@@ -142,9 +154,9 @@ INSERT INTO playlist_songs (playlist_id, song_id, position) VALUES
     (3, 18, 5);
 
 INSERT INTO adds (user_id, target_type, target_id) VALUES
-                                                       (5, 'playlist', 1),
-                                                       (8, 'playlist', 3),
-                                                       (6, 'album', 2);
+    (5, 'playlist', 1),
+    (8, 'playlist', 3),
+    (6, 'album', 2);
 
 -- Adding users by register
 select register_user(
