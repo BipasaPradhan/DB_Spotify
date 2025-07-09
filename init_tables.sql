@@ -89,7 +89,8 @@ CREATE TABLE adds (
     target_id UUID NOT NULL,
     target_type media_target_type NOT NULL,
 
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, target_id, target_type)
 );
 
 

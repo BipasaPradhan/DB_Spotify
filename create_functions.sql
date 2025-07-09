@@ -146,7 +146,7 @@ $$ LANGUAGE plpgsql;
 -- Concert --
 -- Delete concert
 CREATE OR REPLACE FUNCTION cancel_concert(p_concert_id INT)
-    RETURNS VOID AS $$
+RETURNS VOID AS $$
 BEGIN
     IF EXISTS (
         SELECT 1 FROM concerts WHERE concert_id = p_concert_id AND is_cancelled = FALSE
@@ -154,11 +154,100 @@ BEGIN
         UPDATE concerts
         SET is_cancelled = TRUE
         WHERE concert_id = p_concert_id;
-        RAISE NOTICE 'Concert % has been cancelled.', p_concert_id;
-    ELSE
-        RAISE NOTICE 'Concert % is already cancelled or does not exist.', p_concert_id;
     END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+-- update concert 
+CREATE OR REPLACE FUNCTION update_concert(
+    p_concert_id INT,
+    p_title VARCHAR DEFAULT NULL,
+    p_country VARCHAR DEFAULT NULL,
+    p_city VARCHAR DEFAULT NULL,
+    p_venue VARCHAR DEFAULT NULL,
+    p_date DATE DEFAULT NULL,
+    p_time TIME DEFAULT NULL,
+    p_ticket_url TEXT DEFAULT NULL
+)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE concerts
+    SET
+        title = COALESCE(p_title, title),
+        country = COALESCE(p_country, country),
+        city = COALESCE(p_city, city),
+        venue = COALESCE(p_venue, venue),
+        date = COALESCE(p_date, date),
+        time = COALESCE(p_time, time),
+        ticket_url = COALESCE(p_ticket_url, ticket_url)
+    WHERE concert_id = p_concert_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get songs from playlist
+CREATE OR REPLACE FUNCTION get_songs_from_playlist(
+    p_playlist_id INT
+)
+RETURNS TABLE (
+    song_id INT,
+    title VARCHAR,
+    artist_name VARCHAR,
+    duration INTERVAL,
+    genre_id INT,
+    file_url TEXT,
+    explicit BOOLEAN,
+    "position" INT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        s.song_id,
+        s.title,
+        a.name AS artist_name,
+        s.duration,
+        s.genre_id,
+        s.file_url,
+        s.explicit,
+        ps."position"
+    FROM playlist_songs ps
+    JOIN songs s ON ps.song_id = s.song_id
+    JOIN artists a ON s.artist_id = a.artist_id
+    WHERE ps.playlist_id = p_playlist_id
+    ORDER BY ps."position";
+END;
+$$ LANGUAGE plpgsql;
+
+-- Add likes
+CREATE OR REPLACE FUNCTION add_media_to_library(
+    p_user_id INT,
+    p_target_id INT,
+    p_target_type media_target_type
+)
+RETURNS VOID AS $$
+BEGIN
+    -- Prevent duplicates by ignoring if already exists
+    INSERT INTO adds (user_id, target_id, target_type)
+    VALUES (p_user_id, p_target_id, p_target_type)
+    ON CONFLICT DO NOTHING;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Remove likes
+CREATE OR REPLACE FUNCTION remove_media_from_library(
+    p_user_id INT,
+    p_target_id INT,
+    p_target_type media_target_type
+)
+RETURNS VOID AS $$
+BEGIN
+    DELETE FROM adds
+    WHERE user_id = p_user_id
+      AND target_id = p_target_id
+      AND target_type = p_target_type;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
 
 
