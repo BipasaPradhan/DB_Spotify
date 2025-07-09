@@ -385,7 +385,79 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Add new genre
+CREATE OR REPLACE FUNCTION add_genre(
+    p_genre_id INT,
+    p_name TEXT
+)
+    RETURNS INT AS $$
+BEGIN
+    INSERT INTO genres (genre_id, name)
+    VALUES (p_genre_id, p_name);
 
+    RETURN p_genre_id;
+END;
+$$ LANGUAGE plpgsql;
 
+-- Add new concert
+CREATE OR REPLACE FUNCTION add_concert(
+    p_concert_id INT,
+    p_artist_id INT,
+    p_title TEXT,
+    p_country TEXT,
+    p_city TEXT,
+    p_venue TEXT,
+    p_date DATE,
+    p_time TIME,
+    p_ticket_url TEXT,
+    p_is_cancelled BOOLEAN
+)
+    RETURNS INT AS $$
+BEGIN
+    INSERT INTO concerts (
+        concert_id, artist_id, title, country, city,
+        venue, date, time, ticket_url, is_cancelled
+    )
+    VALUES (
+               p_concert_id, p_artist_id, p_title, p_country, p_city,
+               p_venue, p_date, p_time, p_ticket_url, p_is_cancelled
+           );
 
+    RETURN p_concert_id;
+END;
+$$ LANGUAGE plpgsql;
 
+-- Add new playlist
+CREATE OR REPLACE FUNCTION add_playlist(
+    p_playlist_id INT,
+    p_title TEXT,
+    p_user_id INT,
+    p_is_public BOOLEAN
+)
+    RETURNS INT AS $$
+BEGIN
+    INSERT INTO playlists (
+        playlist_id, title, user_id, is_public, created_at
+    )
+    VALUES (
+               p_playlist_id, p_title, p_user_id, p_is_public, CURRENT_TIMESTAMP
+           );
+
+    RETURN p_playlist_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Add new song to playlist
+CREATE OR REPLACE FUNCTION add_song_to_playlist(
+    p_playlist_id INT,
+    p_song_id INT,
+    p_position INT
+)
+    RETURNS INT AS $$
+BEGIN
+    INSERT INTO playlist_songs (playlist_id, song_id, position)
+    VALUES (p_playlist_id, p_song_id, p_position);
+
+    RETURN p_position;
+END;
+$$ LANGUAGE plpgsql;
