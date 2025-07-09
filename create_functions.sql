@@ -753,3 +753,21 @@ BEGIN
     ORDER BY c.date, c."time";
 END;
 $$ LANGUAGE plpgsql;
+
+-- update artist
+CREATE OR REPLACE FUNCTION update_artist(
+    p_artist_id INT,
+    p_name VARCHAR DEFAULT NULL,
+    p_bio TEXT DEFAULT NULL,
+    p_image_url TEXT DEFAULT NULL
+)
+    RETURNS VOID AS $$
+BEGIN
+    UPDATE artists
+    SET
+        name = COALESCE(p_name, name),
+        bio = COALESCE(p_bio, bio),
+        image_url = COALESCE(p_image_url, image_url)
+    WHERE artist_id = p_artist_id;
+END;
+$$ LANGUAGE plpgsql;
