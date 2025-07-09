@@ -495,6 +495,40 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Playlist with description
+CREATE OR REPLACE FUNCTION add_playlist(
+    p_title TEXT,
+    p_user_id INT,
+    p_is_public BOOLEAN,
+    p_cover_url TEXT,
+    p_description TEXT
+)
+    RETURNS INT AS $$
+DECLARE
+    new_id INT;
+BEGIN
+    INSERT INTO playlists (
+        title,
+        user_id,
+        is_public,
+        created_at,
+        cover_url,
+        description
+    )
+    VALUES (
+               p_title,
+               p_user_id,
+               p_is_public,
+               CURRENT_TIMESTAMP,
+               p_cover_url,
+               p_description
+           )
+    RETURNING playlist_id INTO new_id;
+
+    RETURN new_id;
+END;
+$$ LANGUAGE plpgsql;
+
 
 -- Add new song to playlist
 CREATE OR REPLACE FUNCTION add_song_to_playlist(
@@ -539,6 +573,40 @@ BEGIN
         is_public = COALESCE(p_is_public, is_public),
         cover_url = COALESCE(p_cover_url, cover_url)
     WHERE playlist_id = p_playlist_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Soft delete playlist
+CREATE OR REPLACE FUNCTION soft_delete_playlist(p_playlist_id INT)
+    RETURNS VOID AS $$
+BEGIN
+    UPDATE playlists
+    SET is_deleted = TRUE
+    WHERE playlist_id = p_playlist_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get user playlists
+CREATE OR REPLACE FUNCTION get_user_playlists(p_user_id INT)
+    RETURNS TABLE (
+                      playlist_id INT,
+                      title VARCHAR,
+                      is_public BOOLEAN,
+                      cover_url TEXT,
+                      created_at TIMESTAMP
+                  ) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT
+            p.playlist_id,
+            p.title,
+            p.is_public,
+            p.cover_url,
+            p.created_at
+        FROM playlists p
+        WHERE p.user_id = p_user_id
+          AND p.is_deleted = FALSE
+        ORDER BY p.playlist_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -841,22 +909,46 @@ CREATE OR REPLACE FUNCTION add_song_for_artist(
     p_artist_id INT,
     p_title VARCHAR,
     p_duration INTERVAL,
-    p_genre_id INT,
     p_file_url TEXT,
     p_explicit BOOLEAN,
+    p_genre_id INT DEFAULT NULL,
     p_album_id INT DEFAULT NULL
 )
     RETURNS INT AS $$
+DECLARE
+    valid_genre_id INT := NULL;
+    valid_album_id INT := NULL;
 BEGIN
-RETURN add_new_song(
-        p_title           => p_title,
-        p_artist_id       => p_artist_id,
-        p_duration        => p_duration,
-        p_genre_id        => p_genre_id,
-        p_file_url        => p_file_url,
-        p_explicit        => p_explicit,
-        p_album_id        => p_album_id
-       );
+    -- Validate genre_id exists
+    IF p_genre_id IS NOT NULL AND EXISTS (
+        SELECT 1 FROM genres WHERE genre_id = p_genre_id
+    ) THEN
+        valid_genre_id := p_genre_id;
+    END IF;
+
+    -- Validate album_id: if provided, must exist and belong to artist
+    IF p_album_id IS NOT NULL THEN
+        IF EXISTS (
+            SELECT 1 FROM albums
+            WHERE album_id = p_album_id
+              AND artist_id = p_artist_id
+        ) THEN
+            valid_album_id := p_album_id;
+        ELSE
+            RAISE NOTICE 'Album ID % does not exist or does not belong to artist ID %', p_album_id, p_artist_id;
+            RETURN NULL;  -- indicate failure
+        END IF;
+    END IF;
+
+    RETURN add_new_song(
+            p_title     => p_title,
+            p_artist_id => p_artist_id,
+            p_duration  => p_duration,
+            p_genre_id  => valid_genre_id,
+            p_file_url  => p_file_url,
+            p_explicit  => p_explicit,
+            p_album_id  => valid_album_id
+           );
 END;
 $$ LANGUAGE plpgsql;
 
@@ -871,24 +963,41 @@ CREATE OR REPLACE FUNCTION edit_song_for_artist(
     p_explicit BOOLEAN DEFAULT NULL,
     p_album_id INT DEFAULT NULL
 )
-RETURNS VOID AS $$
+    RETURNS VOID AS $$
 BEGIN
     -- Ensure the artist owns the song
     IF NOT EXISTS (
         SELECT 1 FROM songs WHERE song_id = p_song_id AND artist_id = p_artist_id
     ) THEN
         RAISE EXCEPTION 'Permission denied: Artist % does not own Song %', p_artist_id, p_song_id;
-END IF;
+    END IF;
 
-UPDATE songs
-SET
-    title = COALESCE(p_title, title),
-    duration = COALESCE(p_duration, duration),
-    genre_id = COALESCE(p_genre_id, genre_id),
-    file_url = COALESCE(p_file_url, file_url),
-    explicit = COALESCE(p_explicit, explicit),
-    album_id = COALESCE(p_album_id, album_id)
-WHERE song_id = p_song_id;
+    -- Validate genre_id if provided
+    IF p_genre_id IS NOT NULL THEN
+        IF NOT EXISTS (SELECT 1 FROM genres WHERE genre_id = p_genre_id) THEN
+            RAISE EXCEPTION 'Invalid genre_id %', p_genre_id;
+        END IF;
+    END IF;
+
+    -- Validate album_id if provided (must belong to artist)
+    IF p_album_id IS NOT NULL THEN
+        IF NOT EXISTS (
+            SELECT 1 FROM albums WHERE album_id = p_album_id AND artist_id = p_artist_id
+        ) THEN
+            RAISE EXCEPTION 'Invalid album_id % for artist %', p_album_id, p_artist_id;
+        END IF;
+    END IF;
+
+    -- Now update the song with new values or keep old values if NULL
+    UPDATE songs
+    SET
+        title = COALESCE(p_title, title),
+        duration = COALESCE(p_duration, duration),
+        genre_id = COALESCE(p_genre_id, genre_id),
+        file_url = COALESCE(p_file_url, file_url),
+        explicit = COALESCE(p_explicit, explicit),
+        album_id = COALESCE(p_album_id, album_id)
+    WHERE song_id = p_song_id;
 END;
 $$ LANGUAGE plpgsql;
 

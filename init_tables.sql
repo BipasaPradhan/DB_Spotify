@@ -75,6 +75,9 @@ CREATE TABLE playlists (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
+ALTER TABLE playlist_songs
+    ADD CONSTRAINT unique_playlist_position
+        UNIQUE (playlist_id, position);
 CREATE TABLE playlist_songs (
     playlist_id INTEGER NOT NULL,
     song_id INTEGER NOT NULL,
