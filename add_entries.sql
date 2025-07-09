@@ -89,19 +89,19 @@ SELECT add_album('YHLQMDLG', 10, '2020-02-29', 'https://fakecdn.com/album/yhlqmd
 SELECT add_album('SOUR', 11, '2021-05-21', 'https://fakecdn.com/album/sour.jpg?token=alb10&expires=1725480000');
 
 
--- Filling in the rest of the table
+-- Filling in the rest of the table (concert)
 
-INSERT INTO concerts (concert_id, artist_id, title, country, city, venue, date, time, ticket_url, is_cancelled) VALUES
-    (1, 1, 'Live in Tokyo', 'Japan', 'Tokyo', 'Tokyo Dome', '2025-08-10', '19:00', 'https://tickets.com/tokyo', FALSE),
-    (2, 2, 'Acoustic Night', 'USA', 'New York', 'Madison Square Garden', '2025-09-05', '20:30', 'https://tickets.com/nyc', FALSE),
-    (3, 3, 'Cancelled Tour', 'UK', 'London', 'O2 Arena', '2025-07-20', '18:00', 'https://tickets.com/london', TRUE),
-    (4, 4, 'Eyelashes', 'UK', 'Bristol', 'Bristol Venue', '2025-10-24', '19:00','https://tickets.com/bristol', FALSE),
-    (5, 5, 'My Weekend', 'Thailand', 'Bangkok', 'Siam Stadium', '2025-9-30', '19:30', 'https://tickets.com/bangkok', TRUE),
-    (6, 6, 'Grand Opening', 'Italy', 'Rome', 'Piza Tower', '2025-11-24', '21:00', 'https://tickets.com/rome', FALSE),
-    (7, 7, 'Your Shape', 'Philippines', 'Manila', 'National Stadium', '2025-10-31', '20:00', 'https://tickets.com/manila', FALSE),
-    (8, 8, 'Duolingo', 'USA', 'Austin', 'Austin Texas Stadium', '2026-1-2', '20:30', 'https://tickets.com/austin', TRUE),
-    (9, 9, 'Lola Bunny', 'China', 'Shanghai', 'Shanghai Dome', '2025-11-11', '19:30', 'https://ccp.com/shanghai', FALSE),
-    (10, 10, 'Olive Garden', 'Greece', 'Athens', 'Athena Colosseum', '2025-8-8', '18:30', 'https://tickets.com/athens', FALSE);
+SELECT add_concert(2, 'Live in Tokyo', 'Japan', 'Tokyo', 'Tokyo Dome', '2025-08-10', '19:00', 'https://tickets.com/tokyo', FALSE);
+SELECT add_concert(3, 'Acoustic Night', 'USA', 'New York', 'Madison Square Garden', '2025-09-05', '20:30', 'https://tickets.com/nyc', FALSE);
+SELECT add_concert(4, 'Cancelled Tour', 'UK', 'London', 'O2 Arena', '2025-07-20', '18:00', 'https://tickets.com/london', TRUE);
+SELECT add_concert(5, 'Eyelashes', 'UK', 'Bristol', 'Bristol Venue', '2025-10-24', '19:00', 'https://tickets.com/bristol', FALSE);
+SELECT add_concert(6, 'My Weekend', 'Thailand', 'Bangkok', 'Siam Stadium', '2025-09-30', '19:30', 'https://tickets.com/bangkok', TRUE);
+SELECT add_concert(7, 'Grand Opening', 'Italy', 'Rome', 'Piza Tower', '2025-11-24', '21:00', 'https://tickets.com/rome', FALSE);
+SELECT add_concert(8, 'Your Shape', 'Philippines', 'Manila', 'National Stadium', '2025-10-31', '20:00', 'https://tickets.com/manila', FALSE);
+SELECT add_concert(9, 'Duolingo', 'USA', 'Austin', 'Austin Texas Stadium', '2026-01-02', '20:30', 'https://tickets.com/austin', TRUE);
+SELECT add_concert(10, 'Lola Bunny', 'China', 'Shanghai', 'Shanghai Dome', '2025-11-11', '19:30', 'https://ccp.com/shanghai', FALSE);
+SELECT add_concert(11, 'Olive Garden', 'Greece', 'Athens', 'Athena Colosseum', '2025-08-08', '18:30', 'https://tickets.com/athens', FALSE);
+
 
 SELECT add_new_song('Single Track', 5, '00:03:20', 2, 'url.mp3', false);
 DO $$

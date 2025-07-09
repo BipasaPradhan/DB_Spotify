@@ -411,7 +411,6 @@ $$ LANGUAGE plpgsql;
 
 -- Add new concert
 CREATE OR REPLACE FUNCTION add_concert(
-    p_concert_id INT,
     p_artist_id INT,
     p_title TEXT,
     p_country TEXT,
@@ -420,20 +419,23 @@ CREATE OR REPLACE FUNCTION add_concert(
     p_date DATE,
     p_time TIME,
     p_ticket_url TEXT,
-    p_is_cancelled BOOLEAN
+    p_is_cancelled BOOLEAN DEFAULT FALSE
 )
     RETURNS INT AS $$
+DECLARE
+    new_concert_id INT;
 BEGIN
     INSERT INTO concerts (
-        concert_id, artist_id, title, country, city,
+        artist_id, title, country, city,
         venue, date, time, ticket_url, is_cancelled
     )
     VALUES (
-               p_concert_id, p_artist_id, p_title, p_country, p_city,
+               p_artist_id, p_title, p_country, p_city,
                p_venue, p_date, p_time, p_ticket_url, p_is_cancelled
-           );
+           )
+    RETURNING concert_id INTO new_concert_id;
 
-    RETURN p_concert_id;
+    RETURN new_concert_id;
 END;
 $$ LANGUAGE plpgsql;
 
