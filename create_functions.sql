@@ -511,6 +511,37 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Remove song from playlist
+CREATE OR REPLACE FUNCTION remove_song_from_playlist(
+    p_playlist_id INT,
+    p_song_id INT
+)
+    RETURNS VOID AS $$
+BEGIN
+    DELETE FROM playlist_songs
+    WHERE playlist_id = p_playlist_id
+      AND song_id = p_song_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Edit playlist
+CREATE OR REPLACE FUNCTION edit_playlist(
+    p_playlist_id INT,
+    p_title TEXT DEFAULT NULL,
+    p_is_public BOOLEAN DEFAULT NULL,
+    p_cover_url TEXT DEFAULT NULL
+)
+    RETURNS VOID AS $$
+BEGIN
+    UPDATE playlists
+    SET
+        title = COALESCE(p_title, title),
+        is_public = COALESCE(p_is_public, is_public),
+        cover_url = COALESCE(p_cover_url, cover_url)
+    WHERE playlist_id = p_playlist_id;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Get album and songs
 CREATE OR REPLACE FUNCTION get_album_with_songs(p_album_id INT)
 RETURNS TABLE (
