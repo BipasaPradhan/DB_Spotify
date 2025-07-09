@@ -647,3 +647,30 @@ BEGIN
     RETURN new_artist_id;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Get artist's songs ranked by stream count
+CREATE OR REPLACE FUNCTION get_songs_by_artist(p_artist_id INT)
+RETURNS TABLE (
+    song_id INT,
+    title varchar,
+    stream_count BIGINT,
+    duration INTERVAL,
+    file_url TEXT,
+    album_id INT,
+    is_explicit BOOLEAN
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        s.song_id,
+        s.title,
+        s.stream_count,
+        s.duration,
+        s.file_url,
+        s.album_id,
+        s.explicit
+    FROM songs s
+    WHERE s.artist_id = p_artist_id
+    ORDER BY s.stream_count DESC;
+END;
+$$ LANGUAGE plpgsql;
