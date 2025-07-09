@@ -500,3 +500,31 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Get song detail
+CREATE OR REPLACE FUNCTION get_song_details(p_song_id INT)
+RETURNS TABLE (
+    song_id INT,
+    title VARCHAR,
+    duration INTERVAL,
+    artist_name VARCHAR,
+    album_title VARCHAR,
+    release_date DATE,
+    genre_name VARCHAR
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        s.song_id,
+        s.title,
+        s.duration,
+        ar.name AS artist_name,
+        al.title AS album_title,
+        al.release_date,
+        g.name AS genre_name
+    FROM songs s
+    JOIN artists ar ON s.artist_id = ar.artist_id
+    JOIN albums al ON s.album_id = al.album_id
+    JOIN genres g ON s.genre_id = g.genre_id
+    WHERE s.song_id = p_song_id;
+END;
+$$ LANGUAGE plpgsql;
