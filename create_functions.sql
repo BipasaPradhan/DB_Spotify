@@ -260,6 +260,50 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Add subscription
+CREATE OR REPLACE FUNCTION add_user_subscription(
+    p_user_id INT,
+    p_plan subscription_plan
+)
+RETURNS VOID AS $$
+BEGIN
+    INSERT INTO subscription (user_id, plan)
+    VALUES (p_user_id, p_plan)
+    ON CONFLICT (user_id) DO UPDATE
+    SET plan = EXCLUDED.plan,
+        start_date = CURRENT_TIMESTAMP;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Remove subscription
+CREATE OR REPLACE FUNCTION cancel_user_subscription(
+    p_user_id INT
+)
+RETURNS VOID AS $$
+BEGIN
+    DELETE FROM subscription
+    WHERE user_id = p_user_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Change subscription
+CREATE OR REPLACE FUNCTION change_user_subscription(
+    p_user_id INT,
+    p_new_plan subscription_plan
+)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE subscription
+    SET plan = p_new_plan,
+        start_date = CURRENT_TIMESTAMP
+    WHERE user_id = p_user_id;
+
+    -- Optionally: Raise a notice if no subscription was updated
+    IF NOT FOUND THEN
+        RAISE NOTICE 'No active subscription found for user %', p_user_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
 
 
 
