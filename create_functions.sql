@@ -3,7 +3,6 @@ CREATE OR REPLACE FUNCTION register_user(
     p_username VARCHAR,
     p_email VARCHAR,
     p_password TEXT,
-    p_login_provider VARCHAR DEFAULT 'local'
 )
 RETURNS INTEGER AS $$
 DECLARE
@@ -19,7 +18,7 @@ BEGIN
         p_username,
         p_email,
         crypt(p_password, gen_salt('bf')),  -- hash the password
-        COALESCE(p_login_provider, 'local')
+        'local'  -- default provider for local registration
     )
     RETURNING user_id INTO new_user_id;
 
