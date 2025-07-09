@@ -38,7 +38,7 @@ INSERT INTO albums (album_id, artist_id, title, release_date, cover_url) VALUES
 -- Adding users by register
 select register_user(
        'Peter',
-       'peter@something.com', 
+       'peter@something.com',
        'password'
        );
 
@@ -57,3 +57,56 @@ select login_oauth_user(
        NULL,
        'Nanu' -- Optional (maybe not needed on initial login/change username later)
        )
+
+-- 4th User (Local)
+SELECT register_user(
+               'Alice',
+               'alice@example.com',
+               'alicepassword'
+       );
+
+-- 5th User (Local)
+SELECT register_user(
+               'Bob',
+               'bob@music.com',
+               'bobsecure'
+       );
+
+-- 6th User (Local)
+SELECT register_user(
+               'Chloe',
+               'chloe@somewhere.com',
+               'chloe123'
+       );
+
+-- 7th User (Google)
+SELECT login_oauth_user(
+               'google',
+               'googleID-999',
+               'mia@gmail.com',
+               'Mia'
+       );
+
+-- 8th User (Apple)
+SELECT login_oauth_user(
+               'apple',
+               'appleID-abc',
+               'liam@icloud.com',
+               'Liam'
+       );
+
+-- 9th User (Phone)
+SELECT login_oauth_user(
+               'phone',
+               '0892345678',
+               NULL,
+               'Max'
+       );
+
+-- 10th User (Phone)
+SELECT login_oauth_user(
+               'phone',
+               '0911112233',
+               NULL,
+               'Nina'
+       );
