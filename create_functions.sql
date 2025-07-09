@@ -464,6 +464,38 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- New playlist with cover_url
+CREATE OR REPLACE FUNCTION add_playlist(
+    p_title TEXT,
+    p_user_id INT,
+    p_is_public BOOLEAN,
+    p_cover_url TEXT
+)
+RETURNS INT AS $$
+DECLARE
+    new_id INT;
+BEGIN
+    INSERT INTO playlists (
+        title,
+        user_id,
+        is_public,
+        created_at,
+        cover_url
+    )
+    VALUES (
+        p_title,
+        p_user_id,
+        p_is_public,
+        CURRENT_TIMESTAMP,
+        p_cover_url
+    )
+    RETURNING playlist_id INTO new_id;
+
+    RETURN new_id;
+END;
+$$ LANGUAGE plpgsql;
+
+
 -- Add new song to playlist
 CREATE OR REPLACE FUNCTION add_song_to_playlist(
     p_playlist_id INT,
