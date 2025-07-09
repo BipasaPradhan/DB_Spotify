@@ -629,3 +629,21 @@ BEGIN
     RETURN v_plan;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Add new artist 
+CREATE OR REPLACE FUNCTION add_artist(
+    p_name VARCHAR,
+    p_bio TEXT DEFAULT NULL,
+    p_image_url TEXT DEFAULT NULL
+)
+RETURNS INTEGER AS $$
+DECLARE
+    new_artist_id INTEGER;
+BEGIN
+    INSERT INTO artists (name, bio, image_url)
+    VALUES (p_name, p_bio, p_image_url)
+    RETURNING artist_id INTO new_artist_id;
+
+    RETURN new_artist_id;
+END;
+$$ LANGUAGE plpgsql;

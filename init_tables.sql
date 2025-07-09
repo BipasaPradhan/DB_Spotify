@@ -26,7 +26,9 @@ CREATE TABLE users (
     login_provider VARCHAR(50),
     account_type VARCHAR(20) DEFAULT 'standard'
 );
-
+-- uniqueness constratint
+ALTER TABLE artists
+    ADD CONSTRAINT unique_artist_entry UNIQUE (name, bio, image_url);
 CREATE TABLE artists (
     artist_id serial primary key,
     name varchar(50) not null,
