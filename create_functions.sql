@@ -926,18 +926,13 @@ BEGIN
         valid_genre_id := p_genre_id;
     END IF;
 
-    -- Validate album_id: if provided, must exist and belong to artist
-    IF p_album_id IS NOT NULL THEN
-        IF EXISTS (
-            SELECT 1 FROM albums
-            WHERE album_id = p_album_id
-              AND artist_id = p_artist_id
-        ) THEN
-            valid_album_id := p_album_id;
-        ELSE
-            RAISE NOTICE 'Album ID % does not exist or does not belong to artist ID %', p_album_id, p_artist_id;
-            RETURN NULL;  -- indicate failure
-        END IF;
+    -- Validate album_id exists and belongs to artist
+    IF p_album_id IS NOT NULL AND EXISTS (
+        SELECT 1 FROM albums
+        WHERE album_id = p_album_id
+          AND artist_id = p_artist_id
+    ) THEN
+        valid_album_id := p_album_id;
     END IF;
 
     RETURN add_new_song(
