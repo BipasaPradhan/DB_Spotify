@@ -1088,3 +1088,94 @@ BEGIN
     END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+-- Backend CRUD for playlist
+CREATE OR REPLACE FUNCTION add_admin_playlist(
+    p_title VARCHAR,
+    p_is_public BOOLEAN DEFAULT TRUE
+)
+RETURNS INT AS $$
+DECLARE
+    new_playlist_id INT;
+BEGIN
+    INSERT INTO playlists (
+        title,
+        is_public,
+        created_by,
+        user_id
+    )
+    VALUES (
+        p_title,
+        p_is_public,
+        'admin',
+            0
+    )
+    RETURNING playlist_id INTO new_playlist_id;
+
+    RETURN new_playlist_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION add_song_to_playlist_admin(
+    p_playlist_id INT,
+    p_song_id INT,
+    p_position INT DEFAULT NULL
+)
+RETURNS VOID AS $$
+DECLARE
+    next_pos INT;
+    exists_record BOOLEAN;
+BEGIN
+    -- Check for existing song in playlist
+    SELECT EXISTS (
+        SELECT 1 FROM playlist_songs
+        WHERE playlist_id = p_playlist_id AND song_id = p_song_id
+    ) INTO exists_record;
+
+    IF exists_record THEN
+        RAISE NOTICE 'Song already exists in playlist.';
+        RETURN;
+    END IF;
+
+    -- Determine position if not provided
+    IF p_position IS NULL THEN
+        SELECT COALESCE(MAX(position), 0) + 1
+        INTO next_pos
+        FROM playlist_songs
+        WHERE playlist_id = p_playlist_id;
+    ELSE
+        next_pos := p_position;
+    END IF;
+
+    -- Insert song
+    INSERT INTO playlist_songs (playlist_id, song_id, position)
+    VALUES (p_playlist_id, p_song_id, next_pos);
+END;
+$$ LANGUAGE plpgsql;
+
+-- Delete
+CREATE OR REPLACE FUNCTION soft_delete_admin_playlist(
+    p_playlist_id INT
+)
+RETURNS VOID AS $$
+DECLARE
+    creator_type VARCHAR;
+BEGIN
+    -- Check who created the playlist
+    SELECT created_by INTO creator_type
+    FROM playlists
+    WHERE playlist_id = p_playlist_id;
+
+    -- Only allow if created by admin
+    IF creator_type != 'admin' THEN
+        RAISE EXCEPTION 'Only admin playlists can be soft-deleted using this function.';
+    END IF;
+
+    -- Soft delete
+    UPDATE playlists
+    SET is_deleted = TRUE
+    WHERE playlist_id = p_playlist_id;
+END;
+$$ LANGUAGE plpgsql;

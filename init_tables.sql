@@ -15,6 +15,7 @@ DROP TABLE IF EXISTS users CASCADE;
 CREATE TYPE media_target_type AS ENUM ('song', 'album', 'playlist');
 CREATE TYPE subscription_plan AS ENUM ('free', 'student', 'family');
 CREATE TYPE follow_type AS ENUM ('user', 'artist');
+create type create_type as enum('user', 'admin');
 
 -- Create tables
 CREATE TABLE users (
