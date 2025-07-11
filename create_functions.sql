@@ -1179,3 +1179,23 @@ BEGIN
     WHERE playlist_id = p_playlist_id;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Get artist details
+CREATE OR REPLACE FUNCTION get_artist_details(p_artist_id INT)
+    RETURNS TABLE (
+                      artist_id     INT,
+                      name          VARCHAR,
+                      bio           TEXT,
+                      image_url     TEXT
+                  ) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT
+            a.artist_id,
+            a.name,
+            a.bio,
+            a.image_url
+        FROM artists a
+        WHERE a.artist_id = p_artist_id;
+END;
+$$ LANGUAGE plpgsql;
